@@ -1,0 +1,168 @@
+#Problem 1 creating data frame with group and labels. Analyzing it with a oneway test
+#a
+dat <- data.frame(sample=c(95, 136, 157, 87, 92, 47, 114, 81, 114, 121,
+                           131, 82, 115, 48, 76, 74, 28, 101, 106, 89,
+                           123, 78, 59, 113),
+                  group=factor(c(1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2,
+                                 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3),
+                               labels=c("x1", "x2", "x3")))
+dat
+str(dat)
+oneway.test(sample ~ group, data =dat,var.equal = TRUE)
+#The p value is 0.6782
+
+#Problem 1 b
+oneway.test(sample ~ group,data =dat,var.equal = FALSE)
+#The p value is 0.7071#Problem 2 Creating own data + t-test
+#a
+x <- c(9,9,14,13,8,11,11,4,9,10)
+y <- c(15,12,14,8,11,16,7,10,12,18)
+t.test(x,y, var.equal = TRUE,conf.level = 0.95)
+# The p value is 1.443e-06 and the null hypothesis is rejected at the 5 % sig level as 
+#the chance to get the data that we got if the means of the populations are equal is is well below 1% (= less than our limit 5%)
+
+
+#Problem 2b
+t.test(x,y, var.equal = TRUE,conf.level = 0.95, paired = TRUE)
+#the p value is 0.09922. The null hypothesis is not rejected at the 5% level of significanse as
+#the chance to get the data that we got if the means of the populations are equal is approx. 10% (= more than our limit 5%)
+
+#Problem 3 Working with Mass/anorexia dataset subsets and t-test
+#a
+
+install.packages("MASS")
+library(MASS)
+str(anorexia)
+anorexia
+anorexia2 <-anorexia
+anorexia2
+
+Prewt_kg <-anorexia[1:72,2]
+Prewt_kg<-Prewt_kg*0.45359237
+
+Postwt_kg <-anorexia[1:72,3]
+Postwt_kg <- Postwt_kg*0.45359237
+anorexia2$Prewt_kg<-Prewt_kg
+anorexia2$Postwt_kg<-Postwt_kg
+anorexia2
+
+#Problem 3b
+c_meth <- anorexia2[c(1:26),4]
+c_meth
+cbt_met <-anorexia2[c(27:55),4]
+cbt_met
+ft_met <-anorexia2[c(56:72),4]
+ft_met
+
+
+meanCont = mean(c_meth)
+meanCBT = mean(cbt_met)
+meanFt =mean(ft_met)
+
+meanvals1 =c(meanCont,meanCBT, meanFt)
+meanvals1
+#The mean of weights in the groups are quite similar. Control method group has the lowest starting weight and FT method the highest
+t.test(c_meth,cbt_met)
+t.test(c_meth,ft_met)
+t.test(ft_met,cbt_met)
+pvals1 <-c(0.4343,0.3184,0.7236)
+pvals1
+#There are no significant diferenes between the means in these groups. All p values are above 10%
+
+#Problem 3c
+c_meth2 <- anorexia2[c(1:26),5]
+c_meth2
+cbt_met2 <-anorexia2[c(27:55),5]
+cbt_met2
+ft_met2 <-anorexia2[c(56:72),5]
+ft_met2
+
+meanCont2 = mean(c_meth2)
+meanCBT2 = mean(cbt_met2)
+meanFt2 =mean(ft_met2)
+
+meanvals2 <-c(meanCont2,meanCBT2,meanFt2)
+meanvals2
+
+t.test(c_meth2,cbt_met2)
+t.test(c_meth2,ft_met2)
+pvals2=c(0.01469,0.0003888)
+pvals2
+?t.test
+
+#Problem 3d
+t.test(c_meth,c_meth2,paired = TRUE)
+t.test(cbt_met,cbt_met2, paired = TRUE)
+t.test(ft_met,ft_met2, paired = TRUE)
+pvals3 <- c(0.7763,0.03502,0.0007003)
+
+pvals3
+
+#Problem 3e
+#The treatment FT is betteer as the chance to get the test data if the mean is same before and after is less tan 0.1%.
+#This is the lowest p value for any of the three paired sample groups
+
+before <-c(7,6,14,12,13,8,9,6,10,9)
+after<-c(8,7,5,8,10,9,7,8,4,5)
+t.test(before,after,paired = TRUE)#4Q Working with datasheet women, regression and plot
+#a
+women
+?lm
+fit <-lm(weight~height, data=women)
+fit
+
+#Q4 b
+summary(fit)
+# The slope's estimate is  3.45  and the intercept's is -87.52
+
+#Q4 c
+plot(women$height,women$weight)
+
+#Q4 d
+abline(-87.52,3.45)
+
+#Based on the plot, The linear regression model fit well to the data. No single data point has a big distance to the regression line#Q5 
+
+#5Looking at iris data and comparing subdata with regression
+#a)
+
+iris
+fit1 <-lm(Sepal.Length~Sepal.Width,data=iris)
+summary(fit1)
+summary(fit1)$r.squared 
+# The coefficient of determination is 0.01382265
+
+#Q5 b)
+
+fitset <-lm(Sepal.Length~Sepal.Width,data=iris, subset = c(iris$Species=="setosa"))
+summary(fitset)$r.squared 
+# The coefficient of determination is 0.5513756
+
+fitver =iris[51:100,]
+fitver
+fitver <-lm(Sepal.Length~Sepal.Width,data=fitver)
+summary(fitver)$r.squared 
+# The coefficient of determination is 0.2765821
+
+fitvir =iris[101:150,]
+fitvir
+fitvir <-lm(Sepal.Length~Sepal.Width,data=fitvir)
+summary(fitvir)$r.squared 
+# The coefficient of determination is 0.2090573
+
+#6 a)
+#Plotting data from Q5 with different colors
+plot(iris$Sepal.Width,iris$Sepal.Length)
+abline(fit1, type="l", lty=2)
+
+#6 b)
+
+plot(iris$Sepal.Width, iris$Sepal.Length, col=c('red', 'blue', 'green')[as.numeric(iris$Species)])
+
+#6 c)
+abline(fitset, col ="red")
+abline(fitver, col="blue")
+abline(fitvir, col ="green")
+
+#6 d)
+legend('topright', legend = levels(iris$Species), col = c('red', 'blue', 'green'), cex = 0.8, pch = 1)
